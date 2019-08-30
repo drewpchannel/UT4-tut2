@@ -3,10 +3,11 @@
 #include "Grabba.h"
 #include "Engine\Classes\GameFramework\PlayerController.h"
 #include "Core\Public\Math\Color.h"
+#include "Engine\Classes\Components\InputComponent.h"
 #include "Engine\World.h"
 #include "Engine\Classes\GameFramework\Actor.h"
 #include "Engine\Classes\Kismet\GameplayStatics.h"
-#include "Engine/Public/DrawDebugHelpers.h"
+#include "Engine\Public\DrawDebugHelpers.h"
 #include "Engine\Public\CollisionQueryParams.h"
 
 #define OUT
@@ -26,8 +27,9 @@ UGrabba::UGrabba()
 void UGrabba::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("grabba repo"));
-	
+	FindPhysicsComponent();
+	FindPhysicsInput();
+	SetupInputComponent();
 }
 
 
@@ -35,6 +37,53 @@ void UGrabba::BeginPlay()
 void UGrabba::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
+void UGrabba::FindPhysicsComponent()
+{
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle) 
+	{
+
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("physics handle not found on: %s"), *GetOwner()->GetName());
+	}
+}
+
+void UGrabba::FindPhysicsInput()
+{
+
+}
+
+void UGrabba::SetupInputComponent()
+{
+	PhysicsInput = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (PhysicsInput)
+	{
+		PhysicsInput->BindAction("Grab", IE_Pressed, this, &UGrabba::Grab);
+		PhysicsInput->BindAction("Grab", IE_Released, this, &UGrabba::Release);
+		UE_LOG(LogTemp, Warning, TEXT("physics input found on: %s"), *GetOwner()->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("physics input not found on: %s"), *GetOwner()->GetName());
+	}
+}
+
+void UGrabba::Grab()
+{
+	GetFirstPhysicsBodyInReach();
+}
+
+void UGrabba::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("grab released"));
+}
+
+const FHitResult UGrabba::GetFirstPhysicsBodyInReach()
+{
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRoatation;
 
@@ -71,5 +120,5 @@ void UGrabba::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 	if (ActorHit) {
 		UE_LOG(LogTemp, Warning, TEXT("works: %s"), *ActorHit->GetName());
 	}
+	return TargetHit;
 }
-

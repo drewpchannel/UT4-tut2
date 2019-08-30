@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/Classes/Components/InputComponent.h"
 #include "Components/ActorComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Grabba.generated.h"
 
 
@@ -21,8 +23,19 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category = "Reach")
+private:
+
 	float Reach = 60.f;
+
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UInputComponent* PhysicsInput = nullptr;
+
+	void Grab();
+	void Release();
+	void FindPhysicsComponent();
+	void FindPhysicsInput();
+	void SetupInputComponent();
+	const FHitResult GetFirstPhysicsBodyInReach();
 
 public:	
 	// Called every frame
