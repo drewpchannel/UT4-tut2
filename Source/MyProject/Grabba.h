@@ -36,6 +36,7 @@ private:
 	void FindPhysicsInput();
 	void SetupInputComponent();
 	const FHitResult GetFirstPhysicsBodyInReach();
+	FVector FindReachEnd();
 	UPhysicsHandleComponent *HandlerComp;
 	UPrimitiveComponent *ComponentToGrab;
 
