@@ -36,6 +36,8 @@ private:
 	void FindPhysicsInput();
 	void SetupInputComponent();
 	const FHitResult GetFirstPhysicsBodyInReach();
+	UPhysicsHandleComponent *HandlerComp;
+	UPrimitiveComponent *ComponentToGrab;
 
 public:	
 	// Called every frame

@@ -9,6 +9,7 @@
 #include "Engine\Classes\Kismet\GameplayStatics.h"
 #include "Engine\Public\DrawDebugHelpers.h"
 #include "Engine\Public\CollisionQueryParams.h"
+#include "Engine\Classes\PhysicsEngine\PhysicsHandleComponent.h"
 
 #define OUT
 
@@ -37,6 +38,17 @@ void UGrabba::BeginPlay()
 void UGrabba::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		FVector PlayerViewPointLocation;
+		FRotator PlayerViewPointRoatation;
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		OUT PlayerViewPointLocation, 
+		OUT PlayerViewPointRoatation
+		);
+		FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRoatation.Vector() * Reach;
+		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+	}
 }
 
 void UGrabba::FindPhysicsComponent()
@@ -74,12 +86,28 @@ void UGrabba::SetupInputComponent()
 
 void UGrabba::Grab()
 {
-	GetFirstPhysicsBodyInReach();
+	///if it returns null do we crash?
+	auto HitResult = GetFirstPhysicsBodyInReach();
+	ComponentToGrab = HitResult.GetComponent();
+	auto ActorHit = HitResult.GetActor();
+	UE_LOG(LogTemp, Warning, TEXT("HitResult: %s"), *HitResult.ToString());
+	if (ActorHit != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("if hits"));
+		ComponentToGrab = HitResult.GetComponent();
+		PhysicsHandle->GrabComponent(
+			ComponentToGrab, 
+			NAME_None,
+			ComponentToGrab->GetOwner()->GetActorLocation(),
+			true
+		);
+	}
 }
 
 void UGrabba::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("grab released"));
+	PhysicsHandle->ReleaseComponent();
 }
 
 const FHitResult UGrabba::GetFirstPhysicsBodyInReach()
@@ -91,11 +119,8 @@ const FHitResult UGrabba::GetFirstPhysicsBodyInReach()
 		OUT PlayerViewPointLocation, 
 		OUT PlayerViewPointRoatation
 	);
-	// UE_LOG(LogTemp, Warning, TEXT("ploc: %s, prot: %s"), 
-	// 	*PlayerViewPointLocation.ToString(),
-	// 	*PlayerViewPointRoatation.ToString()
-	// );
 	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRoatation.Vector() * Reach;
+	
 	DrawDebugLine(
 		GetWorld(), 
 		PlayerViewPointLocation, 
