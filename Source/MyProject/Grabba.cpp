@@ -10,6 +10,7 @@
 #include "Engine\Public\DrawDebugHelpers.h"
 #include "Engine\Public\CollisionQueryParams.h"
 #include "Engine\Classes\PhysicsEngine\PhysicsHandleComponent.h"
+#include "Engine\Classes\Components\PrimitiveComponent.h"
 
 #define OUT
 
@@ -49,7 +50,6 @@ void UGrabba::FindPhysicsComponent()
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	if (PhysicsHandle == nullptr) 
 	{
-		UE_LOG(LogTemp, Warning, TEXT("physics handle not found on: %s"), *GetOwner()->GetName());
 	}
 }
 
@@ -65,11 +65,9 @@ void UGrabba::SetupInputComponent()
 	{
 		PhysicsInput->BindAction("Grab", IE_Pressed, this, &UGrabba::Grab);
 		PhysicsInput->BindAction("Grab", IE_Released, this, &UGrabba::Release);
-		UE_LOG(LogTemp, Warning, TEXT("physics input found on: %s"), *GetOwner()->GetName());
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("physics input not found on: %s"), *GetOwner()->GetName());
 	}
 }
 
@@ -79,10 +77,8 @@ void UGrabba::Grab()
 	auto HitResult = GetFirstPhysicsBodyInReach();
 	ComponentToGrab = HitResult.GetComponent();
 	auto ActorHit = HitResult.GetActor();
-	UE_LOG(LogTemp, Warning, TEXT("HitResult: %s"), *HitResult.ToString());
 	if (ActorHit != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("if hits"));
 		ComponentToGrab = HitResult.GetComponent();
 		PhysicsHandle->GrabComponent(
 			ComponentToGrab, 
@@ -95,7 +91,6 @@ void UGrabba::Grab()
 
 void UGrabba::Release()
 {
-	UE_LOG(LogTemp, Warning, TEXT("grab released"));
 	PhysicsHandle->ReleaseComponent();
 }
 
@@ -124,7 +119,6 @@ const FHitResult UGrabba::GetFirstPhysicsBodyInReach()
 
 	AActor* ActorHit = TargetHit.GetActor();
 	if (ActorHit) {
-		UE_LOG(LogTemp, Warning, TEXT("works: %s"), *ActorHit->GetName());
 	}
 	return TargetHit;
 }

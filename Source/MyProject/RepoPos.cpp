@@ -20,11 +20,9 @@ void URepoPos::BeginPlay()
 {
 	Super::BeginPlay();
 	FString ObjectName = GetOwner()->GetName();
-	UE_LOG(LogTemp, Warning, TEXT("name: %s"), *ObjectName);
 
 	//FString ObjectPos = GetOwner()->GetTransform().GetLocation().ToString();
 	FString ObjectPos = GetOwner()->GetActorLocation().ToString();
-	UE_LOG(LogTemp, Warning, TEXT("pos repo: %s"), *ObjectPos);
 	// ...
 	
 }
