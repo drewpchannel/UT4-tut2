@@ -27,31 +27,15 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UOpenDoor::OpenDoor()
-{
-	if (!Owner) { return; }
-	Owner->SetActorRotation(FRotator(0.0f, OpenAngle, 0.0f));
-}
-
-void UOpenDoor::CloseDoor()
-{
-	if (!Owner) { return; }
-	Owner->SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
-}
-
-
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (GetTotalMassOfActorsOnPlayer() > 50.f)
+	if (GetTotalMassOfActorsOnPlayer() > TriggerMass)
 	{
-		OpenDoor();
-		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
+		OnOpenRequest.Broadcast();
 	} else {
-		if (GetWorld()->GetTimeSeconds() > LastDoorOpenTime + DoorCloseDelay){
-			CloseDoor();
-		}
+		OnCloseRequest.Broadcast();
 	}
 	// Poll trigger volume
 	// If actorthatopens is in the volume
