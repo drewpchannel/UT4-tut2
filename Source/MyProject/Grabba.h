@@ -37,8 +37,8 @@ private:
 	void SetupInputComponent();
 	const FHitResult GetFirstPhysicsBodyInReach();
 	FVector FindReachEnd();
-	UPhysicsHandleComponent *HandlerComp;
-	UPrimitiveComponent *ComponentToGrab;
+	UPhysicsHandleComponent *HandlerComp = nullptr;
+	UPrimitiveComponent *ComponentToGrab = nullptr;
 
 public:	
 	// Called every frame

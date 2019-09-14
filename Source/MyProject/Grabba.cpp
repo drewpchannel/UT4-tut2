@@ -39,6 +39,7 @@ void UGrabba::BeginPlay()
 void UGrabba::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (!PhysicsHandle) { return; }
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(FindReachEnd());
@@ -47,10 +48,8 @@ void UGrabba::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 
 void UGrabba::FindPhysicsComponent()
 {
+	//if (PhysicsHandle) { return; }
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle == nullptr) 
-	{
-	}
 }
 
 void UGrabba::FindPhysicsInput()
@@ -80,6 +79,7 @@ void UGrabba::Grab()
 	if (ActorHit != nullptr)
 	{
 		ComponentToGrab = HitResult.GetComponent();
+		if (!PhysicsHandle) {return;}
 		PhysicsHandle->GrabComponent(
 			ComponentToGrab, 
 			NAME_None,
@@ -91,6 +91,7 @@ void UGrabba::Grab()
 
 void UGrabba::Release()
 {
+	if (!PhysicsHandle) {return;}
 	PhysicsHandle->ReleaseComponent();
 }
 
